@@ -1,1 +1,36 @@
+name: Run Financial Script
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * *'   # runs daily at 6 AM UTC
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy yfinance openpyxl xlsxwriter requests pytz python-dateutil scikit-learn scipy matplotlib seaborn plotly beautifulsoup4
+
+      - name: Create data folders
+        run: mkdir -p data/Comp data/CD data/Dividend
+
+      - name: Run script
+        run: python Save_df4.py
+
+      - name: Upload Excel outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: excel-output
+          path: data/**/*.xlsx
 
